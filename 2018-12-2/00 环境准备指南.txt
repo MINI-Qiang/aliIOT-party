@@ -1,0 +1,18 @@
+1.前往 OCROBOT官网下载OCROBOT_IDE【IDE基于arduino IDE（1.6.10版本），同样的操作可以在arduinoIDE上进行】
+http://www.ocrobot.com/doku.php?id=downloads
+
+2.根据系统情况选择 windows 或 MAC系统
+
+3.下载CP2104驱动（相同页面），下载对应系统版本并安装
+
+库安装：
+
+IDE -> 项目 -> 加载库 ->管理库 -> 搜索 BMP180 [点击安装第一个“Adafruit BMP085 Library”]
+
+下载阿里支持库 https://github.com/MINI-Qiang/aliIotLink  
+
+将文件解压缩放入 IDE根目录 -> libraries 目录中
+
+
+板卡支持安装：
+IDE -> 工具 -> 开发板 -> 开发板管理器 ->  选择OCROBOT ESP8266  点击安装，并耐心等待

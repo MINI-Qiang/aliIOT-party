@@ -1,0 +1,98 @@
+#include <aliIotLink.h>
+#include <ESP8266WiFi.h>
+#include <ArduinoJson.h>
+#include <Wire.h>
+#include <Adafruit_BMP085.h>
+
+Adafruit_BMP085 bmp;
+
+const char* ssid = "OCROBOT";
+const char* password = "jikegongfang";
+
+String updateAlinkJson(uint16_t _id, JsonObject &_AliIotJson);
+void working(uint16_t delayTime);
+
+WiFiClient espClient;   //实例化 wifi网络
+PubSubClient client(espClient); //将网络传入MQTT
+AliIotLink aliLink(client);  //将mqtt传入服务
+bool led_status = 0; //默认是关闭的
+
+//回调函数
+void Callbacks(char* topic, byte* payload, unsigned int length)
+{
+  
+  String LED_topic = "/sys/a1agPKQ3fSf/sensor1/thing/service/property/set";
+  if (strcmp(topic, LED_topic.c_str()) == 0)
+  {
+    StaticJsonBuffer<128> jsonBuffer;
+    JsonObject& payloadData =  jsonBuffer.parseObject(payload);
+    led_status = payloadData["params"]["led"];  //获取开关设置信息
+    digitalWrite(D1,led_status);
+    Serial.println(led_status);
+  }
+ 
+}
+void setup()
+{
+  Serial.begin(115200);
+  bmp.begin();   //传感器初始化
+  pinMode(D1, OUTPUT); //初始化led灯
+
+  WiFi.mode(WIFI_STA);   //配置为客户端模式
+  WiFi.begin(ssid, password);  //初始化并且链接wifi
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  //aliLink.subTopic("/sys/a1agPKQ3fSf/sensor1/thing/service/property/set");   //订阅
+  //aliLink.subTopic("/sys/a1agPKQ3fSf/sensor1/thing/event/property/set_reply");   //订阅
+  //阿里云初始化
+  aliLink.setCallback(Callbacks);
+  aliLink.begin("sensor1", "a1agPKQ3fSf", "J0lvZSntI0ZYfpqkQ4h40OU7WOxoAYgH"); //完成初始化配置 三元素(DeviceName,ProductKey,DeviceSecret)
+}
+void loop()
+{
+
+  if (aliLink.state() != 0)
+  {
+    Serial.println(aliLink.state());
+  }
+  aliLink.loop();
+
+  working(5000); //定时上报业务（15秒一次上报）
+}
+
+// 构建Alink协议的要求
+String updateAlinkJson(uint16_t _id, JsonObject &_AliIotJson)
+{
+  StaticJsonBuffer<256> jsonBuffer;
+  JsonObject& AlinkJson = jsonBuffer.createObject();
+  AlinkJson["id"] = _id;
+  AlinkJson["version"] = "1.0";
+  AlinkJson["params"] = _AliIotJson;
+  //AlinkJson["method"] = "/sys/a1agPKQ3fSf/sensor1/thing/event/property/post";
+  AlinkJson["method"] = "thing.event.property.post";
+  String JsonStr;
+  AlinkJson.printTo(JsonStr);
+  return JsonStr;
+}
+
+//定时上报传感器数据与状态
+void working(uint16_t delayTime)
+{
+  uint32_t thisTime = millis();
+  if ((thisTime % delayTime) == 0)
+  {
+    StaticJsonBuffer<130> jsonBuffer;
+    JsonObject& paramsJson = jsonBuffer.createObject();
+    //paramsJson["led"] = led1;
+    paramsJson["temperature"] = bmp.readTemperature();
+    paramsJson["atmosphere"] = bmp.readPressure();
+    String data = updateAlinkJson(random(1, 100), paramsJson);
+
+    char outputTopic[] = "/sys/a1agPKQ3fSf/sensor1/thing/event/property/post" ;
+    aliLink.publish(outputTopic, data.c_str());
+    //Serial.println(data);
+  }
+}
