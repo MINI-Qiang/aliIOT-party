@@ -1,3 +1,4 @@
+//注意，程序【】标识的部分是需要根据自己情况修改的
 #include <aliIotLink.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
@@ -6,6 +7,7 @@
 
 Adafruit_BMP085 bmp;
 
+//2.4G wifi 名称与密码设置【记得修改为自己的】
 const char* ssid = "OCROBOT";
 const char* password = "jikegongfang";
 
@@ -17,11 +19,11 @@ PubSubClient client(espClient); //将网络传入MQTT
 AliIotLink aliLink(client);  //将mqtt传入服务
 bool led_status = 0; //默认是关闭的
 
-//回调函数
+//回调函数（实现LED灯的控制）
 void Callbacks(char* topic, byte* payload, unsigned int length)
 {
   
-  String LED_topic = "/sys/a1agPKQ3fSf/sensor1/thing/service/property/set";
+  String LED_topic = "/sys/a1agPKQ3fSf/sensor1/thing/service/property/set";    //【此处填写设备上行topic，就是最后是set那个】
   if (strcmp(topic, LED_topic.c_str()) == 0)
   {
     StaticJsonBuffer<128> jsonBuffer;
@@ -49,6 +51,7 @@ void setup()
   //aliLink.subTopic("/sys/a1agPKQ3fSf/sensor1/thing/event/property/set_reply");   //订阅
   //阿里云初始化
   aliLink.setCallback(Callbacks);
+  //【此处填入设备三元组，注意顺序】
   aliLink.begin("sensor1", "a1agPKQ3fSf", "J0lvZSntI0ZYfpqkQ4h40OU7WOxoAYgH"); //完成初始化配置 三元素(DeviceName,ProductKey,DeviceSecret)
 }
 void loop()
@@ -91,7 +94,7 @@ void working(uint16_t delayTime)
     paramsJson["atmosphere"] = bmp.readPressure();
     String data = updateAlinkJson(random(1, 100), paramsJson);
 
-    char outputTopic[] = "/sys/a1agPKQ3fSf/sensor1/thing/event/property/post" ;
+    char outputTopic[] = "/sys/a1agPKQ3fSf/sensor1/thing/event/property/post" ;  //消息上报topic【修改为设备上行topic，就是最后结尾是post的那个】
     aliLink.publish(outputTopic, data.c_str());
     //Serial.println(data);
   }

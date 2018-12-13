@@ -1,5 +1,9 @@
-#include <ArduinoJson.h>
+// 构建一个符合阿里云要求的alink协议
+
+#include <ArduinoJson.h>   //C++的json库
+
 String updateAlinkJson(uint16_t _id, JsonObject &_AliIotJson);
+
 void setup() 
 {
    Serial.begin(9600);
@@ -8,6 +12,7 @@ void setup()
 void loop() 
 
 {
+	
   StaticJsonBuffer<128> jsonBuffer;
    JsonObject& paramsJson = jsonBuffer.createObject();
    paramsJson["LED"] = 0;
@@ -19,14 +24,14 @@ void loop()
 
 }
 
-String updateAlinkJson(uint16_t _id, JsonObject &_AliIotJson)
+String updateAlinkJson(uint16_t _id, JsonObject &_AliIotJson) //alink的基本框架
 {
    StaticJsonBuffer<256> jsonBuffer;
    JsonObject& AlinkJson = jsonBuffer.createObject();
    AlinkJson["id"] = String(_id, DEC);
    AlinkJson["version"] = "1.0";
    AlinkJson["params"] = _AliIotJson;
-   AlinkJson["method"] = "/sys/adsgag/test_device/thing/service/property/set";
+   AlinkJson["method"] = "/sys/adsgag/test_device/thing/service/property/set";   //topic要按照设备提供的set topic填写
    String JsonStr;
    AlinkJson.printTo(JsonStr);
    return JsonStr;

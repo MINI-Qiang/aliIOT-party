@@ -4,18 +4,18 @@
 Adafruit_BMP085 bmp;
   
 void setup() {
-  Serial.begin(9600);
-  bmp.begin();
+  Serial.begin(9600);   //初始化串口波特率为9600
+  bmp.begin();     //初始化气压传感器
 }
   
 void loop() {
-    Serial.print("Temperature = ");
-    Serial.print(bmp.readTemperature());
+    Serial.print("Temperature = ");   //串口输出字符串
+    Serial.print(bmp.readTemperature());   //输出温度数据
     Serial.println(" *C");
     
-    Serial.print("Pressure = ");
-    Serial.print(bmp.readPressure());
+    Serial.print("Pressure = ");    //串口输出字符串
+    Serial.print(bmp.readPressure());  //输出气压数据（单位:帕斯卡）
     Serial.println(" Pa");
     Serial.println();
-    delay(500);
+    delay(500);    //等待500毫秒
 }

@@ -1,12 +1,12 @@
-void setup() 
+void setup()   
 {
-  pinMode(D2, OUTPUT);
+  pinMode(D3, OUTPUT);   //初始化硬件IO口 D3
 }
 
-void loop() 
+void loop()    //循环执行
 {
-  digitalWrite(D2, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);              // wait for a second
-  digitalWrite(D2, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);              // wait for a second
+  digitalWrite(D3, HIGH); 	  // 让D3 IO口输出高电平
+  delay(1000);              	// 等待1000毫秒
+  digitalWrite(D3, LOW);   	 // 让D3 IO口输出低电平
+  delay(1000);             	 // 等待1000毫秒
 }
