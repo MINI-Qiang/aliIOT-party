@@ -29,7 +29,7 @@ void Callbacks(char* topic, byte* payload, unsigned int length)
     StaticJsonBuffer<128> jsonBuffer;
     JsonObject& payloadData =  jsonBuffer.parseObject(payload);
     led_status = payloadData["params"]["led"];  //获取开关设置信息
-    digitalWrite(D1,led_status);
+    digitalWrite(D3,led_status);  //LED管脚是D3
     Serial.println(led_status);
   }
  
@@ -38,7 +38,7 @@ void setup()
 {
   Serial.begin(115200);
   bmp.begin();   //传感器初始化
-  pinMode(D1, OUTPUT); //初始化led灯
+  pinMode(D3, OUTPUT); //初始化led灯
 
   WiFi.mode(WIFI_STA);   //配置为客户端模式
   WiFi.begin(ssid, password);  //初始化并且链接wifi
