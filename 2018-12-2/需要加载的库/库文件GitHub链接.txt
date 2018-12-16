@@ -1,0 +1,3 @@
+¡¾ArduinoJson¡¿: https://github.com/bblanchon/ArduinoJson
+¡¾Adafruit_BMP085_Library¡¿:https://github.com/adafruit/Adafruit-BMP085-Library
+¡¾aliIotLink¡¿£ºhttps://github.com/MINI-Qiang/aliIotLink
